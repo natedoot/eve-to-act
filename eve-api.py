@@ -61,13 +61,13 @@ def process_json_files():
     # Process eve_topology_result and add name value from eve_nodes_result
     updated_topology_result = []
     for item in eve_topology_result:
-        print(item["source_type"])
+        # Topology connctions only listed once from EVE API call. First 'if' statement ensures all eve nodes are brought into ACT nodes
         if item["source_type"] == "node" and item["destination_label"] == "":
             source_id = re.sub("node", "", item["source"])
             source_name = eve_nodes_result.get(source_id, {"name": "unknown"})["name"]
             updated_item = {**item, "source": source_name}
             updated_topology_result.append(updated_item)
-        elif item["source_type"] == "node" and item["destination_type"] == "node":
+        elif item["source_type"] == "node" and not item["source_label"].startswith("Mgmt"):
             source_id = re.sub("node", "", item["source"])
             destination_id = re.sub("node", "", item["destination"])
             source_name = eve_nodes_result.get(source_id, {"name": "unknown"})["name"]
