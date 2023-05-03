@@ -7,11 +7,11 @@ from jinja2 import Environment, FileSystemLoader
 import argparse
 
 def main(args):
-    eve_url = args.eve_url
+    eveurl = args.eveurl
     eve_user = args.eve_user
     eve_pw = args.eve_pw
-    lab_dir = args.lab_dir
-    lab_name = args.lab_name
+    labdir = args.labdir
+    labname = args.labname
     veos_version = args.veos_version
     act_veos_username = args.act_veos_username
     act_veos_password = args.act_veos_password
@@ -101,11 +101,11 @@ def process_json_files():
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,description="EVE-NG to ACT Topology Convert",fromfile_prefix_chars="@",prog='eve-to-act.py')
-    parser.add_argument("-eve-url", type=str, default="", help="EVE-NG URL")
-    parser.add_argument("-eve-user", type=str, default="", help="EVE Username")
-    parser.add_argument("-eve-pw", type=str, default="", help="EVE Password")
-    parser.add_argument("-lab-dir", type=str, default="", help="Lab directory")
-    parser.add_argument("-lab-name", type=str, default="", help="Lab UNL File Name")
+    parser.add_argument("eveurl", type=str,help="EVE-NG URL")
+    parser.add_argument("-eve-user", type=str, default="admin", help="EVE Username")
+    parser.add_argument("-eve-pw", type=str, default="eve", help="EVE Password")
+    parser.add_argument("labdir", type=str, default="", help="Lab directory")
+    parser.add_argument("labname", type=str, default="", help="Lab UNL File Name")
     parser.add_argument("--veos-version", type=str, default="4.28.0F", help="vEOS version")
     parser.add_argument("--act-veos-username", type=str, default="cvpadmin", help="vEOS username")
     parser.add_argument("--act-veos-password", type=str, default="arista123", help="vEOS password")
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     main(args)
 
     # Auth to EVE
-    auth_url = f"{args.eve_url}/api/auth/login"
+    auth_url = f"{args.eveurl}/api/auth/login"
     headers = {"Accept": "application/json"}
     data = {"username": args.eve_user, "password": args.eve_pw}
     response = requests.post(auth_url, headers=headers, data=json.dumps(data), verify=False)
@@ -129,7 +129,7 @@ if __name__ == "__main__":
     cookies = response.cookies
 
     # Get EVE topology
-    topo_url = f"{args.eve_url}/api/labs/{quote(args.lab_dir)}/{quote(args.lab_name)}/topology"
+    topo_url = f"{args.eveurl}/api/labs/{quote(args.labdir)}/{quote(args.labname)}/topology"
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
@@ -143,7 +143,7 @@ if __name__ == "__main__":
         json.dump(topology, f, indent=2)
 
     # Get node names
-    nodes_url = f"{args.eve_url}/api/labs/{quote(args.lab_dir)}/{quote(args.lab_name)}/nodes"
+    nodes_url = f"{args.eveurl}/api/labs/{quote(args.labdir)}/{quote(args.labname)}/nodes"
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
