@@ -1,0 +1,35 @@
+veos:
+  # Define the global vEOS node parameters
+  username: {{ act_veos_username }}
+  password: {{ act_veos_password }}
+  version: {{ veos_version }}
+
+cvp:
+  # Define global cvp node parameters
+  username: {{ act_cvp_user }}
+  password: {{ act_cvp_password }}
+  version: {{ act_cvp_version }}
+  instance: singlenode
+
+# List of ACT nodes
+nodes:
+{%- if act_add_cvp %}
+  - cvp:
+      ip_addr: {{ act_cvp_ip }}
+      node_type: cvp
+      version: {{ act_cvp_version }}
+{%- endif %}
+{%- for node, ip in nodes_ip_map.items() %}
+  - {{ node }}:
+      ip_addr: {{ ip }}
+      node_type: veos
+      version: {{ veos_version }}
+{%- endfor %}
+
+links:{% for item in updated_topology_result -%}
+    {%- if item.destination_label.startswith("Eth") %}
+    - connection:
+        - {{ item.source }}:{{ item.source_label.replace("Eth", "Ethernet") }}
+        - {{ item.destination }}:{{ item.destination_label.replace("Eth", "Ethernet") }}
+    {%- endif %}
+{%- endfor %}
